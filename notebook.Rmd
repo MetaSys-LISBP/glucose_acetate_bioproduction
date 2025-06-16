@@ -1,0 +1,327 @@
+---
+title: "Exploiting acetate for glucose-based bioproduction in <i>Escherichia coli</i><br></br>"
+output:
+  html_document:
+    df_print: paged
+    toc: yes
+---
+
+ 
+
+This notebook performs computational analyses detailed in:
+
+> Acetate as a metabolic booster for glucose-based bioproduction in *Escherichia coli*.
+>
+> T. Gosselin-Monplaisir, D. Jallet, E. Hascoet, S. Uttenweiler-Joseph, S. Heux, P. Millard
+>
+> bioRxiv preprint, doi: [10.1101/](https://doi.org/10.1101/2022.09.20.506926)XXXXXX
+
+This R Markdown notebook is available at [https://github.com/MetaSys-LISBP/glucose_acetate_bioproduction](https://github.com/MetaSys-LISBP/bioproduction){.uri}
+
+Author: Pierre Millard ([pierre.millard\@insa-toulouse.fr](mailto:pierre.millard@insa-toulouse.fr){.email})
+
+Copyright INRAE, 2025
+
+## 1. Initialize environment
+
+Load libraries and initialize environment.
+
+```{r}
+source("misc.R")
+```
+
+## 2. Simulate response of *E. coli* for an acetyl-CoA-sensitive pathway
+
+### 2.1. Run simulations
+
+Load the kinetic model detailed at doi: 10.7554/eLife.63661 and available from Biomodels database ([https://www.ebi.ac.uk/biomodels/)](https://www.ebi.ac.uk/biomodels/)) with the identifier MODEL2005050001.
+
+```{r}
+loadModel("model/Gosselin2025_Ecoli_bioproduction_sensitive.cps")
+```
+
+Define the range of acetate concentration and glycolytic activity used to run simulations.
+
+```{r}
+#   number of steps
+n_step <- 50
+
+#   acetate concentration (between 0.1 and 100 mM)
+ace_concentration <- 10**seq(-1, 2, length.out = n_step)
+
+#   glycolytic activity (between 20 and 100 % of initial Vmax)
+glc_vmax <- getParameters(key="(glc_upt).V")$value*seq(0.2*n_step, n_step)/n_step
+```
+
+Calculate steady-state fluxes for each acetate concentration and level of glycolytic activity.
+
+```{r}
+# create empty matrix to store simulation results
+fluxes <- c("Values[v_growth_rate]", "Values[v_glc_uptake]", "Values[v_ace_net]", "Values[v_bioproduction]")
+simulation_results <- array(NA, dim=c(n_step*0.8+1, n_step, length(fluxes)+2), dimnames=list(inhibition=NULL, ace_concentration=NULL, specie=c("ace_concentration", fluxes, "AcCoA")))
+
+# run simulations
+
+# for each glycolytic activity
+for (k in seq(n_step*0.8+1)){
+  
+  # create empty matrix to store simulation results for a given glycolytic activity (k)
+  res_ace_range <- matrix(NA, nrow=n_step, ncol=length(fluxes)+2, dimnames=list(r=NULL, c=c("ace_concentration", fluxes, "AcCoA")))
+  
+  # update Vmax_glycolysis
+  setParameters(key="(glc_upt).V", value = glc_vmax[k])
+  applyInitialState()
+  
+  # for each acetate concentration
+  for (j in seq(n_step)){
+    
+    # update acetate concentration
+    setSpecies(key="Ace_out", initial_concentration=ace_concentration[j])
+    applyInitialState()
+    
+    # calculate steady-state fluxes
+    res_ss <- runSteadyState()
+    
+    # save steady-state fluxes for glycolytic activity k & acetate concentration j
+    res_ace_range[j,] <- c(ace_concentration[j], unlist(res_ss$global_quantities[res_ss$global_quantities$key %in% fluxes, "value"]), res_ss$species[3,"concentration"][[1]])
+  }
+  
+  # save steady-state fluxes for all acetate concentrations at glycolytic activity k
+  simulation_results[k,,] <- res_ace_range
+  
+}
+```
+
+### 2.2. Glycolytic flux
+
+```{r Figure_3B, fig.width = 6.3, fig.height = 4.5, fig.path='results/', dev=c('png', 'pdf')}
+filled.contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,3]), nlevels = 10,
+                 plot.axes = { axis(1, at=c(-1, 0, 1, 2), label=c(0.1, 1, 10, 100));
+                 axis(2); contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,3]), drawlabels=FALSE, nlevels = 10, add = TRUE, lwd = 1)})
+```
+
+### 2.3. Acetate flux
+
+```{r Figure_3C, fig.width = 6.3, fig.height = 4.5, fig.path='results/', dev=c('png', 'pdf')}
+cols = colorRampPalette(c('royalblue4','lightblue'))
+  color.palette = function(n) hcl.colors(n, "YlOrRd", rev = TRUE)
+
+  filled.contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,4]), nlevels = 10, 
+                 col = c(cols(6), color.palette(4)),
+                 plot.axes = { axis(1, at=c(-1, 0, 1, 2), label=c(0.1, 1, 10, 100));
+                 axis(2); contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,4]), drawlabels=FALSE, nlevels = 10, add = TRUE, lwd = 1)})
+```
+
+### 2.4. Growth rate
+
+```{r Figure_3D, fig.width = 6.3, fig.height = 4.5, fig.path='results/', dev=c('png', 'pdf')}
+filled.contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,2]), nlevels = 10,
+                 plot.axes = { axis(1, at=c(-1, 0, 1, 2), label=c(0.1, 1, 10, 100));
+                 axis(2); contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,2]), drawlabels=FALSE, nlevels = 10, add = TRUE, lwd = 1)})
+```
+
+### 2.5. Product flux
+
+Plot.
+
+```{r Figure_3E, fig.width = 5.3, fig.height = 4.5, fig.path='results/', dev=c('png', 'pdf')}
+cols = colorRampPalette(c('royalblue4','lightblue'))
+  color.palette = function(n) hcl.colors(n, "YlOrRd", rev = TRUE)
+
+  filled.contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,5]), nlevels = 10, 
+                 col = color.palette(12),
+                 plot.axes = { axis(1, at=c(-1, 0, 1, 2), label=c(0.1, 1, 10, 100));
+                 axis(2); contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,5]), drawlabels=FALSE, nlevels = 10, add = TRUE, lwd = 1)})
+```
+
+### 2.5. Yield
+
+```{r Figure_3F, fig.width = 5.3, fig.height = 4.5, fig.path='results/', dev=c('png', 'pdf')}
+
+cols = colorRampPalette(c('royalblue4','lightblue'))
+  color.palette = function(n) hcl.colors(n, "YlOrRd", rev = TRUE)
+  
+ace_S <- simulation_results[,,4]
+ace_S[ace_S>0] <- 0
+  
+Y <- simulation_results[,,5]*2/(simulation_results[,,3] * 6 - ace_S * 2)
+
+  filled.contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(Y), nlevels = 8, 
+                 col = color.palette(8),
+                 plot.axes = { axis(1, at=c(-1, 0, 1, 2), label=c(0.1, 1, 10, 100));
+                 axis(2); contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(Y), drawlabels=FALSE, nlevels = 8, add = TRUE, lwd = 1)})
+```
+
+### 2.5. Productivity
+
+```{r Figure_3G, fig.width = 5.3, fig.height = 4.5, fig.path='results/', dev=c('png', 'pdf')}
+
+cols = colorRampPalette(c('royalblue4','lightblue'))
+  color.palette = function(n) hcl.colors(n, "YlOrRd", rev = TRUE)
+  
+P_10h <- simulation_results[,,5]*0.1/simulation_results[,,2] * (exp(simulation_results[,,2]*10) - 1)/10
+
+  filled.contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(P_10h), nlevels = 12, 
+                 col = color.palette(12),
+                 plot.axes = { axis(1, at=c(-1, 0, 1, 2), label=c(0.1, 1, 10, 100));
+                 axis(2); contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(P_10h), drawlabels=FALSE, nlevels = 10, add = TRUE, lwd = 1)})
+```
+
+### 2.5. AcCoA concentration
+
+```{r Figure_3H, fig.width = 5.3, fig.height = 4.5, fig.path='results/', dev=c('png', 'pdf')}
+cols = colorRampPalette(c('royalblue4','lightblue'))
+  color.palette = function(n) hcl.colors(n, "YlOrRd", rev = TRUE)
+
+  filled.contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,6]), nlevels = 10, 
+                 col = color.palette(14),
+                 plot.axes = { axis(1, at=c(-1, 0, 1, 2), label=c(0.1, 1, 10, 100));
+                 axis(2); contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,6]), drawlabels=FALSE, nlevels = 10, add = TRUE, lwd = 1)})
+```
+
+## 2. Simulate response of *E. coli* for an acetyl-CoA-insensitive pathway
+
+### 2.1. Run simulations
+
+Load the kinetic model detailed at doi: 10.7554/eLife.63661 and available from Biomodels database ([https://www.ebi.ac.uk/biomodels/)](https://www.ebi.ac.uk/biomodels/)) with the identifier MODEL2005050001.
+
+```{r}
+loadModel("model/Gosselin2025_Ecoli_bioproduction_insensitive.cps")
+```
+
+Define the range of acetate concentration and glycolytic activity used to run simulations.
+
+```{r}
+#   number of steps
+n_step <- 50
+
+#   acetate concentration (between 0.1 and 100 mM)
+ace_concentration <- 10**seq(-1, 2, length.out = n_step)
+
+#   glycolytic activity (between 20 and 100 % of initial Vmax)
+glc_vmax <- getParameters(key="(glc_upt).V")$value*seq(0.2*n_step, n_step)/n_step
+```
+
+Calculate steady-state fluxes for each acetate concentration and level of glycolytic activity.
+
+```{r}
+# create empty matrix to store simulation results
+fluxes <- c("Values[v_growth_rate]", "Values[v_glc_uptake]", "Values[v_ace_net]", "Values[v_bioproduction]")
+simulation_results <- array(NA, dim=c(n_step*0.8+1, n_step, length(fluxes)+2), dimnames=list(inhibition=NULL, ace_concentration=NULL, specie=c("ace_concentration", fluxes, "AcCoA")))
+
+# run simulations
+
+# for each glycolytic activity
+for (k in seq(n_step*0.8+1)){
+  
+  # create empty matrix to store simulation results for a given glycolytic activity (k)
+  res_ace_range <- matrix(NA, nrow=n_step, ncol=length(fluxes)+2, dimnames=list(r=NULL, c=c("ace_concentration", fluxes, "AcCoA")))
+  
+  # update Vmax_glycolysis
+  setParameters(key="(glc_upt).V", value = glc_vmax[k])
+  applyInitialState()
+  
+  # for each acetate concentration
+  for (j in seq(n_step)){
+    
+    # update acetate concentration
+    setSpecies(key="Ace_out", initial_concentration=ace_concentration[j])
+    applyInitialState()
+    
+    # calculate steady-state fluxes
+    res_ss <- runSteadyState()
+    
+    # save steady-state fluxes for glycolytic activity k & acetate concentration j
+    res_ace_range[j,] <- c(ace_concentration[j], unlist(res_ss$global_quantities[res_ss$global_quantities$key %in% fluxes, "value"]), res_ss$species[3,"concentration"][[1]])
+  }
+  
+  # save steady-state fluxes for all acetate concentrations at glycolytic activity k
+  simulation_results[k,,] <- res_ace_range
+  
+}
+```
+
+### 2.2. Glycolytic flux
+
+```{r Figure_5B, fig.width = 6.3, fig.height = 4.5, fig.path='results/', dev=c('png', 'pdf')}
+filled.contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,3]), nlevels = 10,
+                 plot.axes = { axis(1, at=c(-1, 0, 1, 2), label=c(0.1, 1, 10, 100));
+                 axis(2); contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,3]), drawlabels=FALSE, nlevels = 10, add = TRUE, lwd = 1)})
+```
+
+### 2.3. Acetate flux
+
+```{r Figure_5C, fig.width = 6.3, fig.height = 4.5, fig.path='results/', dev=c('png', 'pdf')}
+cols = colorRampPalette(c('royalblue4','lightblue'))
+  color.palette = function(n) hcl.colors(n, "YlOrRd", rev = TRUE)
+
+  filled.contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,4]), nlevels = 10, 
+                 col = c(cols(6), color.palette(4)),
+                 plot.axes = { axis(1, at=c(-1, 0, 1, 2), label=c(0.1, 1, 10, 100));
+                 axis(2); contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,4]), drawlabels=FALSE, nlevels = 10, add = TRUE, lwd = 1)})
+```
+
+### 2.4. Growth rate
+
+```{r Figure_5D, fig.width = 6.3, fig.height = 4.5, fig.path='results/', dev=c('png', 'pdf')}
+filled.contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,2]), nlevels = 10,
+                 plot.axes = { axis(1, at=c(-1, 0, 1, 2), label=c(0.1, 1, 10, 100));
+                 axis(2); contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,2]), drawlabels=FALSE, nlevels = 10, add = TRUE, lwd = 1)})
+```
+
+### 2.5. Product flux
+
+```{r Figure_5E, fig.width = 5.3, fig.height = 4.5, fig.path='results/', dev=c('png', 'pdf')}
+cols = colorRampPalette(c('royalblue4','lightblue'))
+  color.palette = function(n) hcl.colors(n, "YlOrRd", rev = TRUE)
+
+  filled.contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,5]), nlevels = 8,
+                 col = color.palette(9),
+                 plot.axes = { axis(1, at=c(-1, 0, 1, 2), label=c(0.1, 1, 10, 100));
+                 axis(2); contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,5]), drawlabels=FALSE, nlevels = 8, add = TRUE, lwd = 1)})
+```
+
+### 2.5. Yield
+
+```{r Figure_5F, fig.width = 5.3, fig.height = 4.5, fig.path='results/', dev=c('png', 'pdf')}
+
+cols = colorRampPalette(c('royalblue4','lightblue'))
+  color.palette = function(n) hcl.colors(n, "YlOrRd", rev = TRUE)
+  
+ace_S <- simulation_results[,,4]
+ace_S[ace_S>0] <- 0
+  
+Y <- simulation_results[,,5]*2/(simulation_results[,,3] * 6 - ace_S * 2)
+
+  filled.contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(Y), nlevels = 10, 
+                 col = color.palette(14),
+                 plot.axes = { axis(1, at=c(-1, 0, 1, 2), label=c(0.1, 1, 10, 100));
+                 axis(2); contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(Y), drawlabels=FALSE, nlevels = 10, add = TRUE, lwd = 1)})
+```
+
+### 2.5. Productivity
+
+```{r Figure_5G, fig.width = 5.3, fig.height = 4.5, fig.path='results/', dev=c('png', 'pdf')}
+
+cols = colorRampPalette(c('royalblue4','lightblue'))
+  color.palette = function(n) hcl.colors(n, "YlOrRd", rev = TRUE)
+  
+P_10h <- simulation_results[,,5]*0.1/simulation_results[,,2] * (exp(simulation_results[,,2]*10) - 1)/10
+
+  filled.contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(P_10h), nlevels = 10, 
+                 col = color.palette(12),
+                 plot.axes = { axis(1, at=c(-1, 0, 1, 2), label=c(0.1, 1, 10, 100));
+                 axis(2); contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(P_10h), drawlabels=FALSE, nlevels = 10, add = TRUE, lwd = 1)})
+```
+
+### 2.5. AcCoA concentration
+
+```{r Figure_5H, fig.width = 5.3, fig.height = 4.5, fig.path='results/', dev=c('png', 'pdf')}
+cols = colorRampPalette(c('royalblue4','lightblue'))
+  color.palette = function(n) hcl.colors(n, "YlOrRd", rev = TRUE)
+
+  filled.contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,6]), nlevels = 10, 
+                 col = color.palette(14),
+                 plot.axes = { axis(1, at=c(-1, 0, 1, 2), label=c(0.1, 1, 10, 100));
+                 axis(2); contour(x=log10(ace_concentration), y=(glc_vmax/max(glc_vmax))*100, z = t(simulation_results[,,6]), drawlabels=FALSE, nlevels = 10, add = TRUE, lwd = 1)})
+```
