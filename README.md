@@ -8,7 +8,7 @@ This R code perform all analyses detailed in the following publication:
 >
 > T. Gosselin-Monplaisir, D. Jallet, E. Hascoet, S. Uttenweiler-Joseph, S. Heux, P. Millard. bioRxiv preprint, 2025, doi: [10.1101/XXXXXX](https://doi.org/10.1101/XXXXXX)
 
-The models are available in COPASI format in the `./model/` directory, and in SBML format from the Biomodels database (http://www.ebi.ac.uk/biomodels/) under identifiers MODELXXXXXX and MODELXXXXXX. Details on the model can be found in Millard et al. 2021 (eLife, doi: [10.7554/eLife.63661](https://doi.org/10.7554/eLife.63661)) and at https://github.com/MetaSys-LISBP/acetate_regulation. Figures are saved in the `./results/` directory.
+The models are available in COPASI format in the `./model/` directory, and in SBML format from the Biomodels database (http://www.ebi.ac.uk/biomodels/) under identifiers MODEL2506160001 (acetyl-CoA-insensitive pathway) and MODEL2506160002 (acetyl-CoA-sensitive pathway). Additional details on model construction and calibration can be found in Millard et al. 2021 (eLife, doi: [10.7554/eLife.63661](https://doi.org/10.7554/eLife.63661)) and at https://github.com/MetaSys-LISBP/acetate_regulation. Figures are saved in the `./results/` directory.
 
 Details on the calculations can be found in the [original publication](https://doi.org/10.1101/XXXXXX) and in the Rmd notebook.
 
