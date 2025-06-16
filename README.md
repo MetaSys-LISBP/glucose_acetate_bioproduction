@@ -12,7 +12,7 @@ The models are available in COPASI format in the `./model/` directory, and in SB
 
 Details on the calculations can be found in the [original publication](https://doi.org/10.1101/XXXXXX) and in the Rmd notebook.
 
-We distribute an HTML file showing the [notebook’s output after execution](https://htmlpreview.github.io/?https://github.com/MetaSys-LISBP/glucose_acetate_bioproduction/blob/master/html/notebook.html)
+We distribute an HTML file showing the [notebook’s output after execution](https://htmlpreview.github.io/?https://github.com/MetaSys-LISBP/glucose_acetate_bioproduction/blob/main/html/notebook.html)
 
 The code is open-source and available under [GPLv3 license](https://www.gnu.org/licenses/gpl-3.0.txt).
 
@@ -46,7 +46,7 @@ Additional information on CoRC installation and usage are available from the CoR
 
 To run all analyses detailed in the publication and reproduce Figures 2 and 4:
 
-- download the [GitHub repository tarball](https://github.com/pierremillard/glucose_acetate_bioproduction/archive/refs/heads/master.zip) and unpack it somewhere on your disk
+- download the [GitHub repository tarball](https://github.com/pierremillard/glucose_acetate_bioproduction/archive/refs/heads/main.zip) and unpack it somewhere on your disk
 
 - start Rstudio
 
