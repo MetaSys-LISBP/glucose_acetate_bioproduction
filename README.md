@@ -6,7 +6,7 @@ This R code perform all analyses detailed in the following publication:
 
 > Acetate as a metabolic booster for glucose-based bioproduction in *Escherichia coli*.
 >
-> T. Gosselin-Monplaisir, D. Jallet, E. Hascoet, S. Uttenweiler-Joseph, S. Heux, P. Millard. bioRxiv preprint, 2025, doi: [10.1101/XXXXXX](https://doi.org/10.1101/XXXXXX)
+> T. Gosselin-Monplaisir, D. Jallet, E. Harscoet, S. Uttenweiler-Joseph, S. Heux, P. Millard. bioRxiv preprint, 2025, doi: [10.1101/XXXXXX](https://doi.org/10.1101/XXXXXX)
 
 The models are available in COPASI format in the `./model/` directory, and in SBML format from the Biomodels database (http://www.ebi.ac.uk/biomodels/) under identifiers MODEL2506160001 (acetyl-CoA-insensitive pathway) and MODEL2506160002 (acetyl-CoA-sensitive pathway). Additional details on model construction and calibration can be found in Millard et al. 2021 (eLife, doi: [10.7554/eLife.63661](https://doi.org/10.7554/eLife.63661)) and at https://github.com/MetaSys-LISBP/acetate_regulation. Figures are saved in the `./results/` directory.
 
@@ -59,7 +59,7 @@ If you have any question, please open a new *issue*
 to [our GitHub issue tracker](https://github.com/MetaSys-LISBP/glucose_acetate_bioproduction/issues) so we could discuss together. 
 
 ## How to cite
-Gosselin-Monplaisir T., Jallet D., Hascoet E., Uttenweiler-Joseph S., Heux S.,  Millard P. Acetate as a metabolic booster for glucose-based bioproduction in *Escherichia coli*. bioRxiv preprint, 2025, doi: [10.1101/XXXXXX](https://doi.org/10.1101/XXXXXX)
+Gosselin-Monplaisir T., Jallet D., Harscoet E., Uttenweiler-Joseph S., Heux S.,  Millard P. Acetate as a metabolic booster for glucose-based bioproduction in *Escherichia coli*. bioRxiv preprint, 2025, doi: [10.1101/XXXXXX](https://doi.org/10.1101/XXXXXX)
 
 ## Authors
 Pierre Millard
