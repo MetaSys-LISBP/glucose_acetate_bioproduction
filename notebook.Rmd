@@ -34,7 +34,7 @@ source("misc.R")
 
 ### 2.1. Run simulations
 
-Load the kinetic model detailed at doi: 10.7554/eLife.63661 and available from Biomodels database ([https://www.ebi.ac.uk/biomodels/)](https://www.ebi.ac.uk/biomodels/)) with the identifier MODEL2005050001.
+Load the kinetic model detailed at doi: 10.7554/eLife.63661 and in the publication. The model is available from Biomodels database ([https://www.ebi.ac.uk/biomodels/)](https://www.ebi.ac.uk/biomodels/)) with the identifier MODEL2506160002. .
 
 ```{r}
 loadModel("model/Gosselin2025_Ecoli_bioproduction_sensitive.cps")
@@ -183,7 +183,7 @@ cols = colorRampPalette(c('royalblue4','lightblue'))
 
 ### 2.1. Run simulations
 
-Load the kinetic model detailed at doi: 10.7554/eLife.63661 and available from Biomodels database ([https://www.ebi.ac.uk/biomodels/)](https://www.ebi.ac.uk/biomodels/)) with the identifier MODEL2005050001.
+Load the kinetic model detailed at doi: 10.7554/eLife.63661 and in the publication. The model is available from Biomodels database ([https://www.ebi.ac.uk/biomodels/)](https://www.ebi.ac.uk/biomodels/)) with the identifier MODEL2506160001.
 
 ```{r}
 loadModel("model/Gosselin2025_Ecoli_bioproduction_insensitive.cps")
