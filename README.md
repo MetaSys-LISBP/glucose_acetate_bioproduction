@@ -1,4 +1,4 @@
-# Interplay between glucose and acetate metabolisms in *Escherichia coli*
+# Exploiting acetate for glucose-based bioproduction in *Escherichia coli*
 
 ## Overview
 
