@@ -1678,9 +1678,9 @@ AcCoA concentration</a></li>
 <em>Escherichia coli</em>.</p>
 <p>T. Gosselin-Monplaisir, D. Jallet, E. Hascoet, S. Uttenweiler-Joseph,
 S. Heux, P. Millard</p>
-<p>bioRxiv preprint, doi: <a href="https://doi.org/10.1101/2022.09.20.506926">10.1101/</a>XXXXXX</p>
+<p>bioRxiv preprint, doi: <a href="https://doi.org/10.1101/2025.06.17.659982">10.1101/2025.06.17.659982</a></p>
 </blockquote>
-<p>This R Markdown notebook is available at <a href="https://github.com/MetaSys-LISBP/bioproduction" class="uri">https://github.com/MetaSys-LISBP/glucose_acetate_bioproduction</a></p>
+<p>This R Markdown notebook is available at <a href="https://github.com/MetaSys-LISBP/glucose_acetate_bioproduction" class="uri">https://github.com/MetaSys-LISBP/glucose_acetate_bioproduction</a></p>
 <p>Author: Pierre Millard (<a href="mailto:pierre.millard@insa-toulouse.fr" class="email">pierre.millard@insa-toulouse.fr</a>)</p>
 <p>Copyright INRAE, 2025</p>
 <div id="initialize-environment" class="section level2">
@@ -1693,9 +1693,9 @@ S. Heux, P. Millard</p>
 pathway</h2>
 <div id="run-simulations" class="section level3">
 <h3>2.1. Run simulations</h3>
-<p>Load the kinetic model detailed at doi: 10.7554/eLife.63661 and
-available from Biomodels database (<a href="https://www.ebi.ac.uk/biomodels/">https://www.ebi.ac.uk/biomodels/)</a>)
-with the identifier MODEL2005050001.</p>
+<p>Load the kinetic model detailed at doi: 10.1101/2025.06.17.659982.
+The model is available from Biomodels database (<a href="https://www.ebi.ac.uk/biomodels/">https://www.ebi.ac.uk/biomodels/)</a>)
+with the identifier MODEL2506160002. .</p>
 <pre class="r"><code>loadModel(&quot;model/Gosselin2025_Ecoli_bioproduction_sensitive.cps&quot;)</code></pre>
 <pre><code>## # A COPASI model reference:
 ## Model name: &quot;E. coli model - Glc-Ace metabolism&quot;
@@ -1832,12 +1832,12 @@ P_10h &lt;- simulation_results[,,5]*0.1/simulation_results[,,2] * (exp(simulatio
 acetyl-CoA-insensitive pathway</h2>
 <div id="run-simulations-1" class="section level3">
 <h3>2.1. Run simulations</h3>
-<p>Load the kinetic model detailed at doi: 10.7554/eLife.63661 and
-available from Biomodels database (<a href="https://www.ebi.ac.uk/biomodels/">https://www.ebi.ac.uk/biomodels/)</a>)
-with the identifier MODEL2005050001.</p>
+<p>Load the kinetic model detailed at doi: 10.1101/2025.06.17.659982.
+The model is available from Biomodels database (<a href="https://www.ebi.ac.uk/biomodels/">https://www.ebi.ac.uk/biomodels/)</a>)
+with the identifier MODEL2506160001.</p>
 <pre class="r"><code>loadModel(&quot;model/Gosselin2025_Ecoli_bioproduction_insensitive.cps&quot;)</code></pre>
 <pre><code>## Warning: Process generated COPASI Message(s):
-## &gt;WARNING 2025-06-16T20:10:18&lt;
+## &gt;WARNING 2025-06-23T09:10:02&lt;
 ##   XML (9): The content is created with a newer version &#39;4.42.284 (Source)&#39; of COPASI.
 ##   This means it might include features your version of COPASI does not support.
 ##   To assure full compatibility please download the newest version at http://www.copasi.org.</code></pre>

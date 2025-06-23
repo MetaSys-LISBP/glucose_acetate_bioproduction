@@ -14,9 +14,9 @@ This notebook performs computational analyses detailed in:
 >
 > T. Gosselin-Monplaisir, D. Jallet, E. Hascoet, S. Uttenweiler-Joseph, S. Heux, P. Millard
 >
-> bioRxiv preprint, doi: [10.1101/](https://doi.org/10.1101/2022.09.20.506926)XXXXXX
+> bioRxiv preprint, doi: [10.1101/2025.06.17.659982](https://doi.org/10.1101/2025.06.17.659982)
 
-This R Markdown notebook is available at [https://github.com/MetaSys-LISBP/glucose_acetate_bioproduction](https://github.com/MetaSys-LISBP/bioproduction){.uri}
+This R Markdown notebook is available at <https://github.com/MetaSys-LISBP/glucose_acetate_bioproduction>
 
 Author: Pierre Millard ([pierre.millard\@insa-toulouse.fr](mailto:pierre.millard@insa-toulouse.fr){.email})
 
@@ -34,7 +34,7 @@ source("misc.R")
 
 ### 2.1. Run simulations
 
-Load the kinetic model detailed at doi: 10.7554/eLife.63661 and in the publication. The model is available from Biomodels database ([https://www.ebi.ac.uk/biomodels/)](https://www.ebi.ac.uk/biomodels/)) with the identifier MODEL2506160002. .
+Load the kinetic model detailed at doi: 10.1101/2025.06.17.659982. The model is available from Biomodels database ([https://www.ebi.ac.uk/biomodels/)](https://www.ebi.ac.uk/biomodels/)) with the identifier MODEL2506160002. .
 
 ```{r}
 loadModel("model/Gosselin2025_Ecoli_bioproduction_sensitive.cps")
@@ -183,7 +183,7 @@ cols = colorRampPalette(c('royalblue4','lightblue'))
 
 ### 2.1. Run simulations
 
-Load the kinetic model detailed at doi: 10.7554/eLife.63661 and in the publication. The model is available from Biomodels database ([https://www.ebi.ac.uk/biomodels/)](https://www.ebi.ac.uk/biomodels/)) with the identifier MODEL2506160001.
+Load the kinetic model detailed at doi: 10.1101/2025.06.17.659982. The model is available from Biomodels database ([https://www.ebi.ac.uk/biomodels/)](https://www.ebi.ac.uk/biomodels/)) with the identifier MODEL2506160001.
 
 ```{r}
 loadModel("model/Gosselin2025_Ecoli_bioproduction_insensitive.cps")
